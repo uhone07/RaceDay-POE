@@ -8,7 +8,7 @@ This repository contains the Portfolio of Evidence (POE) for PROG6212, submitted
 - **Part 2:** RESTful API built in C# with unit tests and CI/CD
 - **Part 3:** MVC web application with Azure Blob Storage and Dockers
 
-## User Roles
+## User Role
 
 - **Organiser** — can create, edit, and delete events, manage event categories, capture participant results, and view all event enrolments.
 - **Participant** — can create an account, browse events, enter an event by selecting a category, view their own enrolments, and track their personal results.
@@ -21,7 +21,7 @@ This repository contains the Portfolio of Evidence (POE) for PROG6212, submitted
 
 ## CI/CD
 
-A GitHub Actions workflow validates that the required Part 1 files are present in `/docs` on every push.
+A GitHub Actions workflows validates that the required Part 1 files are present in `/docs` on every push.
 
 ![CI Build Success](docs/ci-build-success.png)
 
