@@ -6,7 +6,7 @@ This repository contains the Portfolio of Evidence (POE) for PROG6212, submitted
 
 - **Part 1:** System planning — ERD, API endpoint plan, and SQL database script (this submission)
 - **Part 2:** RESTful API built in C# with unit tests and CI/CD
-- **Part 3:** MVC web application with Azure Blob Storage and Docker
+- **Part 3:** MVC web application with Azure Blob Storage and Dockers
 
 ## User Roles
 
