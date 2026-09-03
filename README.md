@@ -25,7 +25,6 @@ A GitHub Actions workflows validates that the required Part 1 files are present 
 
 ![CI Build Success](docs/ci-build-success.png)
 
-## Video Presentation will be 5 mintues
 
 # RaceDay-POE
 
