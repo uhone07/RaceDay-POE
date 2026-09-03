@@ -27,4 +27,4 @@ A GitHub Actions workflow validates that the required Part 1 files are present i
 
 ## Video Presentation
 
-[Watch the Part 1 walkthrough video here](PASTE_YOUR_YOUTUBE_LINK_HERE)
+[Watch the Part 1 walkthrough video here(PASTE_YOUR_YOUTUBE_LINK_HERE)
