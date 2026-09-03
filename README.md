@@ -25,6 +25,6 @@ A GitHub Actions workflow validates that the required Part 1 files are present i
 
 ![CI Build Success](docs/ci-build-success.png)
 
-## Video Presentation
+## Video Presentation will be 5 mintues
 
 [Watch the Part 1 walkthrough video here PASTE_YOUR_YOUTUBE_LINK_HERE
