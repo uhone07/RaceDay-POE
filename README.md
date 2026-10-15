@@ -39,7 +39,7 @@ A GitHub Actions workflow validates the repository structure, builds the API, an
 
 ![CI Build Success](docs/ci-build-success.png)
 
-![CI Build Success Part 2](<img width="893" height="326" alt="ci_build_success part2" src="https://github.com/user-attachments/assets/04e94a19-76d1-48fb-a577-8d94048ada9e" />
+
 )
 
 ## Video Presentations
