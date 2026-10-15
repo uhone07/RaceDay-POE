@@ -25,7 +25,7 @@ public class EnrolmentsController : ControllerBase
     /// <response code="403">Not a Participant.</response>
     /// <response code="404">Event does not exist.</response>
     /// <response code="409">Already enrolled in this event.</response>
-    [HttpPost("events/{eventId}/enrolmentsments")]
+    [HttpPost("events/{eventId}/enrolments")]
     [SessionAuthorize("Participant")]
     public async Task<IActionResult> Enrol(int eventId, EnrolDto dto)
     {
@@ -97,7 +97,7 @@ public class EnrolmentsController : ControllerBase
     /// <response code="200">List of enrolments.</response>
     /// <response code="403">Not an Organiser, or not your event.</response>
     /// <response code="404">Event does not exist.</response>
-    [HttpGet("events/{eventId}/enrolmentsments")]
+    [HttpGet("events/{eventId}/enrolments")]
     [SessionAuthorize("Organiser")]
     public async Task<IActionResult> GetEventEnrolments(int eventId)
     {

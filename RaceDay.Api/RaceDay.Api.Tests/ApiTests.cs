@@ -180,7 +180,7 @@ public class AuthTests : ApiTestBase
             var participant = await LoggedInClient("Participant");
             var id = await CreateEvent(organiser);
 
-            var res = await participant.GetAsync($"/api/events/{id}/enrolmentsments");
+            var res = await participant.GetAsync($"/api/events/{id}/enrolments");
             Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
         }
     }
@@ -259,13 +259,13 @@ public class EnrolmentTests : ApiTestBase
         Assert.Equal(HttpStatusCode.Created, enrol.StatusCode);
 
         // The participant sees it in their own enrolments, as Pending
-        var mine = await participant.GetFromJsonAsync<JsonElement>("/api/enrolmentsment/my");
+        var mine = await participant.GetFromJsonAsync<JsonElement>("/api/enrolments/my");
         Assert.Equal(1, mine.GetArrayLength());
         Assert.Equal(eventId, mine[0].GetProperty("eventId").GetInt32());
         Assert.Equal("Pending", mine[0].GetProperty("status").GetString());
 
         // The organiser sees it on the event's enrolment list
-        var all = await organiser.GetFromJsonAsync<JsonElement>($"/api/events/{eventId}/enrolmentsments");
+        var all = await organiser.GetFromJsonAsync<JsonElement>($"/api/events/{eventId}/enrolments");
         Assert.Equal(1, all.GetArrayLength());
     }
 
