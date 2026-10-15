@@ -180,7 +180,7 @@ public class AuthTests : ApiTestBase
             var participant = await LoggedInClient("Participant");
             var id = await CreateEvent(organiser);
 
-            var res = await participant.GetAsync($"/api/events/{id}/enrolments");
+            var res = await participant.GetAsync($"/api/events/{id}/enrolmentsments");
             Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
         }
     }
@@ -255,17 +255,17 @@ public class EnrolmentTests : ApiTestBase
         var eventId = await CreateEvent(organiser);
         var categoryId = await CreateCategory(organiser, eventId);
 
-        var enrol = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrol", new { categoryId });
+        var enrol = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
         Assert.Equal(HttpStatusCode.Created, enrol.StatusCode);
 
         // The participant sees it in their own enrolments, as Pending
-        var mine = await participant.GetFromJsonAsync<JsonElement>("/api/enrolments/mine");
+        var mine = await participant.GetFromJsonAsync<JsonElement>("/api/enrolmentsment/my");
         Assert.Equal(1, mine.GetArrayLength());
         Assert.Equal(eventId, mine[0].GetProperty("eventId").GetInt32());
         Assert.Equal("Pending", mine[0].GetProperty("status").GetString());
 
         // The organiser sees it on the event's enrolment list
-        var all = await organiser.GetFromJsonAsync<JsonElement>($"/api/events/{eventId}/enrolments");
+        var all = await organiser.GetFromJsonAsync<JsonElement>($"/api/events/{eventId}/enrolmentsments");
         Assert.Equal(1, all.GetArrayLength());
     }
 
@@ -277,8 +277,8 @@ public class EnrolmentTests : ApiTestBase
         var eventId = await CreateEvent(organiser);
         var categoryId = await CreateCategory(organiser, eventId);
 
-        await participant.PostAsJsonAsync($"/api/events/{eventId}/enrol", new { categoryId });
-        var second = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrol", new { categoryId });
+        await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        var second = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
         Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
     }
 
@@ -289,7 +289,7 @@ public class EnrolmentTests : ApiTestBase
         var eventId = await CreateEvent(organiser);
         var categoryId = await CreateCategory(organiser, eventId);
 
-        var res = await organiser.PostAsJsonAsync($"/api/events/{eventId}/enrol", new { categoryId });
+        var res = await organiser.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
         Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
     }
 
@@ -301,7 +301,7 @@ public class EnrolmentTests : ApiTestBase
         var categoryId = await CreateCategory(organiser, eventId);
 
         var anonymous = Factory.CreateClient();
-        var res = await anonymous.PostAsJsonAsync($"/api/events/{eventId}/enrol", new { categoryId });
+        var res = await anonymous.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
         Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
     }
 
@@ -314,7 +314,7 @@ public class EnrolmentTests : ApiTestBase
         var eventB = await CreateEvent(organiser);
         var categoryOfB = await CreateCategory(organiser, eventB);
 
-        var res = await participant.PostAsJsonAsync($"/api/events/{eventA}/enrol", new { categoryId = categoryOfB });
+        var res = await participant.PostAsJsonAsync($"/api/events/{eventA}/enrolments", new { categoryId = categoryOfB });
         Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
     }
 }

@@ -41,16 +41,16 @@ Role legend: **None** = public, **Any** = any logged-in user, **Organiser** / **
 
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
-| POST | /api/events/{eventId}/enrolments | Enrols the logged-in Participant into an event under a chosen category. | Participant | { categoryId } | 201 Created – enrolment recorded 400 Bad Request – category does not belong to event 409 Conflict – already enrolled |
-| GET | /api/enrolments/my | Returns all enrolments belonging to the logged-in Participant. | Participant | None | 200 OK – list of enrolments |
-| GET | /api/events/{eventId}/enrolments | Returns all Participants enrolled in a specific event, owned by the Organiser. | Organiser | None | 200 OK – list of enrolments 403 Forbidden – not the owning Organiser |
-| PUT | /api/enrolments/{id}/status | Updates an enrolment's status (e.g. Pending to Confirmed). | Organiser | { status } | 200 OK – status updated 403 Forbidden – not the owning Organiser 404 Not Found – enrolment does not exist |
+| POST | /api/events/{eventId}/enrolmentsments | Enrols the logged-in Participant into an event under a chosen category. | Participant | { categoryId } | 201 Created – enrolment recorded 400 Bad Request – category does not belong to event 409 Conflict – already enrolled |
+| GET | /api/enrolmentsments/my | Returns all enrolments belonging to the logged-in Participant. | Participant | None | 200 OK – list of enrolments |
+| GET | /api/events/{eventId}/enrolmentsments | Returns all Participants enrolled in a specific event, owned by the Organiser. | Organiser | None | 200 OK – list of enrolments 403 Forbidden – not the owning Organiser |
+| PUT | /api/enrolmentsments/{id}/status | Updates an enrolment's status (e.g. Pending to Confirmed). | Organiser | { status } | 200 OK – status updated 403 Forbidden – not the owning Organiser 404 Not Found – enrolment does not exist |
 
 ## 6. Results
 
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
-| POST | /api/enrolments/{enrolmentId}/results | Captures the finish time and position for a Participant's enrolment, once the event has concluded. | Organiser | { finishTime, finishPosition, totalFinishers } | 201 Created – result captured 403 Forbidden – not the owning Organiser 409 Conflict – result already captured |
+| POST | /api/enrolmentsments/{enrolmentId}/results | Captures the finish time and position for a Participant's enrolment, once the event has concluded. | Organiser | { finishTime, finishPosition, totalFinishers } | 201 Created – result captured 403 Forbidden – not the owning Organiser 409 Conflict – result already captured |
 | PUT | /api/results/{id} | Updates a previously captured result. | Organiser | { finishTime, finishPosition, totalFinishers } | 200 OK – result updated 403 Forbidden – not the owning Organiser 404 Not Found – result does not exist |
 | GET | /api/results/my | Returns the logged-in Participant's personal race history across all completed events. | Participant | None | 200 OK – list of results with event name, date, category, time, position |
 | GET | /api/events/{eventId}/results | Returns all published results for a specific event. | Organiser | None | 200 OK – list of results 403 Forbidden – not the owning Organiser |

@@ -19,14 +19,15 @@ public class ResultsController : ControllerBase
         _context = context;
     }
 
-    /// <summary>Captures or updates the result for an enrolment on one of your events (Organiser only).</summary>
-    /// <response code="200">Result saved.</response>
+    /// <summary>Captures the result for an enrolment on one of your events (Organiser only).</summary>
+    /// <response code="201">Result captured.</response>
     /// <response code="400">Position is greater than total finishers.</response>
     /// <response code="403">Not an Organiser, or not your event.</response>
     /// <response code="404">Enrolment does not exist.</response>
-    [HttpPut("enrolments/{enrolmentId}/result")]
+    /// <response code="409">Result already captured for this enrolment.</response>
+    [HttpPost("enrolments/{enrolmentId}/results")]
     [SessionAuthorize("Organiser")]
-    public async Task<IActionResult> SaveResult(int enrolmentId, ResultDto dto)
+    public async Task<IActionResult> CreateResult(int enrolmentId, ResultDto dto)
     {
         if (dto.FinishPosition > dto.TotalFinishers)
             return BadRequest(new { message = "FinishPosition cannot be greater than TotalFinishers." });
@@ -42,31 +43,65 @@ public class ResultsController : ControllerBase
         if (enrolment.Event!.OrganiserId != HttpContext.Session.GetUserId())
             return StatusCode(403, new { message = "You can only capture results for your own events." });
 
-        if (enrolment.Result == null)
+        if (enrolment.Result != null)
+            return Conflict(new { message = "A result has already been captured for this enrolment." });
+
+        var result = new Result
         {
-            enrolment.Result = new Result
-            {
-                FinishTime = dto.FinishTime,
-                FinishPosition = dto.FinishPosition,
-                TotalFinishers = dto.TotalFinishers
-            };
-        }
-        else
+            EnrolmentId = enrolmentId,
+            FinishTime = dto.FinishTime,
+            FinishPosition = dto.FinishPosition,
+            TotalFinishers = dto.TotalFinishers
+        };
+
+        _context.Results.Add(result);
+        await _context.SaveChangesAsync();
+
+        return StatusCode(201, new
         {
-            enrolment.Result.FinishTime = dto.FinishTime;
-            enrolment.Result.FinishPosition = dto.FinishPosition;
-            enrolment.Result.TotalFinishers = dto.TotalFinishers;
-        }
+            result.ResultId,
+            result.EnrolmentId,
+            result.FinishTime,
+            result.FinishPosition,
+            result.TotalFinishers
+        });
+    }
+
+    /// <summary>Updates a previously captured result (Organiser only).</summary>
+    /// <response code="200">Result updated.</response>
+    /// <response code="400">Position is greater than total finishers.</response>
+    /// <response code="403">Not an Organiser, or not your event.</response>
+    /// <response code="404">Result does not exist.</response>
+    [HttpPut("results/{id}")]
+    [SessionAuthorize("Organiser")]
+    public async Task<IActionResult> UpdateResult(int id, ResultDto dto)
+    {
+        if (dto.FinishPosition > dto.TotalFinishers)
+            return BadRequest(new { message = "FinishPosition cannot be greater than TotalFinishers." });
+
+        var result = await _context.Results
+            .Include(r => r.Enrolment).ThenInclude(e => e!.Event)
+            .FirstOrDefaultAsync(r => r.ResultId == id);
+
+        if (result == null)
+            return NotFound(new { message = "Result not found." });
+
+        if (result.Enrolment!.Event!.OrganiserId != HttpContext.Session.GetUserId())
+            return StatusCode(403, new { message = "You can only update results for your own events." });
+
+        result.FinishTime = dto.FinishTime;
+        result.FinishPosition = dto.FinishPosition;
+        result.TotalFinishers = dto.TotalFinishers;
 
         await _context.SaveChangesAsync();
 
         return Ok(new
         {
-            enrolment.Result.ResultId,
-            enrolment.EnrolmentId,
-            enrolment.Result.FinishTime,
-            enrolment.Result.FinishPosition,
-            enrolment.Result.TotalFinishers
+            result.ResultId,
+            result.EnrolmentId,
+            result.FinishTime,
+            result.FinishPosition,
+            result.TotalFinishers
         });
     }
 
@@ -106,7 +141,7 @@ public class ResultsController : ControllerBase
     /// <summary>Lists the logged-in Participant's own results (Participant only).</summary>
     /// <response code="200">List of results.</response>
     /// <response code="403">Not a Participant.</response>
-    [HttpGet("results/mine")]
+    [HttpGet("results/my")]
     [SessionAuthorize("Participant")]
     public async Task<IActionResult> GetMyResults()
     {

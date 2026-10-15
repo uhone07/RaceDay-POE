@@ -25,7 +25,7 @@ public class EnrolmentsController : ControllerBase
     /// <response code="403">Not a Participant.</response>
     /// <response code="404">Event does not exist.</response>
     /// <response code="409">Already enrolled in this event.</response>
-    [HttpPost("events/{eventId}/enrol")]
+    [HttpPost("events/{eventId}/enrolmentsments")]
     [SessionAuthorize("Participant")]
     public async Task<IActionResult> Enrol(int eventId, EnrolDto dto)
     {
@@ -67,7 +67,7 @@ public class EnrolmentsController : ControllerBase
     /// <summary>Lists the logged-in Participant's own enrolments.</summary>
     /// <response code="200">List of enrolments.</response>
     /// <response code="403">Not a Participant.</response>
-    [HttpGet("enrolments/mine")]
+    [HttpGet("enrolments/my")]
     [SessionAuthorize("Participant")]
     public async Task<IActionResult> GetMyEnrolments()
     {
@@ -97,7 +97,7 @@ public class EnrolmentsController : ControllerBase
     /// <response code="200">List of enrolments.</response>
     /// <response code="403">Not an Organiser, or not your event.</response>
     /// <response code="404">Event does not exist.</response>
-    [HttpGet("events/{eventId}/enrolments")]
+    [HttpGet("events/{eventId}/enrolmentsments")]
     [SessionAuthorize("Organiser")]
     public async Task<IActionResult> GetEventEnrolments(int eventId)
     {
@@ -124,6 +124,34 @@ public class EnrolmentsController : ControllerBase
             .ToListAsync();
 
         return Ok(list);
+    }
+
+    /// <summary>Sets the status of an enrolment on one of your events (Organiser only).</summary>
+    /// <response code="200">Status updated.</response>
+    /// <response code="400">Invalid status value.</response>
+    /// <response code="403">Not an Organiser, or not your event.</response>
+    /// <response code="404">Enrolment does not exist.</response>
+    [HttpPut("enrolments/{id}/status")]
+    [SessionAuthorize("Organiser")]
+    public async Task<IActionResult> UpdateStatus(int id, UpdateEnrolmentStatusDto dto)
+    {
+        var valid = new[] { "Pending", "Confirmed", "Cancelled" };
+        if (!valid.Contains(dto.Status))
+            return BadRequest(new { message = "Status must be Pending, Confirmed or Cancelled." });
+
+        var enrolment = await _context.Enrolments
+            .Include(e => e.Event)
+            .FirstOrDefaultAsync(e => e.EnrolmentId == id);
+
+        if (enrolment == null)
+            return NotFound(new { message = "Enrolment not found." });
+
+        if (enrolment.Event!.OrganiserId != HttpContext.Session.GetUserId())
+            return StatusCode(403, new { message = "You can only update enrolments for your own events." });
+
+        enrolment.Status = dto.Status;
+        await _context.SaveChangesAsync();
+        return Ok(new { enrolment.EnrolmentId, enrolment.Status });
     }
 
     /// <summary>Cancels one of your own enrolments (Participant only).</summary>
