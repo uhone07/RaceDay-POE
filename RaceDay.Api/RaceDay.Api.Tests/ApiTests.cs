@@ -104,7 +104,86 @@ public class AuthTests : ApiTestBase
         });
         Assert.Equal(HttpStatusCode.Created, res.StatusCode);
     }
+    // ---------- Event management and role rejection ----------
+    public class EventTests : ApiTestBase
+    {
+        public EventTests(RaceDayFactory f) : base(f) { }
 
+        [Fact]
+        public async Task Organiser_CanCreateEvent_Returns201()
+        {
+            var organiser = await LoggedInClient("Organiser");
+            var res = await organiser.PostAsJsonAsync("/api/events", NewEvent());
+            Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task Organiser_CanUpdateAndDeleteOwnEvent()
+        {
+            var organiser = await LoggedInClient("Organiser");
+            var id = await CreateEvent(organiser);
+
+            var update = await organiser.PutAsJsonAsync($"/api/events/{id}", NewEvent("Renamed Event"));
+            Assert.Equal(HttpStatusCode.OK, update.StatusCode);
+
+            var delete = await organiser.DeleteAsync($"/api/events/{id}");
+            Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
+        }
+
+        [Fact]
+        public async Task Participant_CreatingEvent_Returns403()
+        {
+            var participant = await LoggedInClient("Participant");
+            var res = await participant.PostAsJsonAsync("/api/events", NewEvent());
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task Unauthenticated_CreatingEvent_Returns401()
+        {
+            var anonymous = Factory.CreateClient();
+            var res = await anonymous.PostAsJsonAsync("/api/events", NewEvent());
+            Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task Unauthenticated_ViewingEvents_Returns401()
+        {
+            var anonymous = Factory.CreateClient();
+            var res = await anonymous.GetAsync("/api/events");
+            Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task Organiser_CannotEditAnotherOrganisersEvent_Returns403()
+        {
+            var owner = await LoggedInClient("Organiser");
+            var other = await LoggedInClient("Organiser");
+            var id = await CreateEvent(owner);
+
+            var res = await other.PutAsJsonAsync($"/api/events/{id}", NewEvent("Hijacked"));
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task Participant_CanViewEvents_Returns200()
+        {
+            var participant = await LoggedInClient("Participant");
+            var res = await participant.GetAsync("/api/events");
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        }
+
+        [Fact]
+        public async Task Participant_ViewingEventEnrolments_Returns403()
+        {
+            var organiser = await LoggedInClient("Organiser");
+            var participant = await LoggedInClient("Participant");
+            var id = await CreateEvent(organiser);
+
+            var res = await participant.GetAsync($"/api/events/{id}/enrolments");
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+        }
+    }
     [Fact]
     public async Task Register_DuplicateEmail_Returns409()
     {
