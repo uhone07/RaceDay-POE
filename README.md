@@ -32,7 +32,14 @@ Run them in Visual Studio with **Test > Run All Tests**. They cover registration
 
 ### AI use disclosure
 I used an AI assistant (Claude) for step-by-step guidance while building Part 2, including project setup, code structure, debugging, and drafting this README. I reviewed, ran and tested the code and can explain it.
-
+### Deviations from the Part 1 plan
+- `POST /api/profile/picture` is not implemented in Part 2; picture upload needs Azure Blob Storage, which the plan assigns to Part 3.
+- Viewing events and categories requires a logged-in user (any role), because the brief says both roles can view them. The plan listed these as public.
+- JSON field names are `eventDate` and `distanceKm` instead of `date` and `distance`.
+- Deleting an event or category returns 204 No Content (not 200), and returns 409 Conflict if it has enrolments.
+- `POST /api/auth/logout` is open to everyone; with no session it simply does nothing.
+- Extra endpoint added: `PUT /api/enrolments/{id}/cancel` lets a Participant cancel their own enrolment.
+- The database is created by EF Core migrations, so column types differ slightly from the SQL script (nvarchar/datetime2 instead of varchar/datetime). Tables, keys and relationships are the same.
 ## CI/CD
 
 A GitHub Actions workflow validates the repository structure, builds the API, and runs all unit tests on every push.
