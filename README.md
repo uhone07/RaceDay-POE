@@ -36,11 +36,10 @@ I used an AI assistant (Claude) for step-by-step guidance while building Part 2,
 ## CI/CD
 
 A GitHub Actions workflow validates the repository structure, builds the API, and runs all unit tests on every push.
-
 ![CI Build Success](docs/ci-build-success.png)
+<img width="1785" height="652" alt="image" src="https://github.com/user-attachments/assets/9c7f242e-1a81-41a6-a633-a849544b2dc6" />
 
 
-)
 
 ## Video Presentations
 
