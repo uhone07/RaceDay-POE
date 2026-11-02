@@ -13,6 +13,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+
+    options.AddSecurityDefinition("SessionCookie", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Cookie,
+        Name = ".AspNetCore.Session",
+        Description = "Session-based authentication. Log in with POST /api/auth/login. " +
+                  "The session cookie is then sent automatically with every request. " +
+                  "Organiser-only endpoints return 403 for Participants, and 401 if not logged in."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("SessionCookie", document)] = new List<string>()
+    });
+
+
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "RaceDay API",
