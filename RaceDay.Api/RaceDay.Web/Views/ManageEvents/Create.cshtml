@@ -1,0 +1,19 @@
+﻿@model RaceDay.Web.Models.EventFormViewModel
+@{
+    ViewData["Title"] = "New event";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-3">New event</h2>
+        <form asp-action="Create" method="post">
+            <partial name="_EventFields" model="Model" />
+            <button type="submit" class="btn btn-primary">Create event</button>
+            <a class="btn btn-link" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
