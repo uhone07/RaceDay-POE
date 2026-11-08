@@ -1,0 +1,19 @@
+﻿@model RaceDay.Web.Models.CategoryFormViewModel
+@{
+    ViewData["Title"] = "New category";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-3">New category</h2>
+        <form asp-action="Create" asp-route-eventId="@Model.EventId" method="post">
+            <partial name="_CategoryFields" model="Model" />
+            <button type="submit" class="btn btn-primary">Add category</button>
+            <a class="btn btn-link" asp-action="Index" asp-route-eventId="@Model.EventId">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,50 @@
+﻿@model List<RaceDay.Web.Models.MyEnrolmentItem>
+@{
+    ViewData["Title"] = "My enrolments";
+}
+
+<h2 class="mb-3">My enrolments</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">You have not enrolled in any events yet.</p>
+    <a class="btn btn-primary" asp-controller="Events" asp-action="Index">Browse events</a>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr><th>Event</th><th>Date</th><th>Category</th><th>Status</th><th>Enrolled on</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model)
+            {
+                <tr>
+                    <td><a asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId">@e.EventName</a></td>
+                    <td>@e.EventDate.ToString("dd MMM yyyy HH:mm")</td>
+                    <td>@e.CategoryName</td>
+                    <td><span class="badge @e.BadgeClass">@e.Status</span></td>
+                    <td>@e.EnrolmentDate.ToString("dd MMM yyyy")</td>
+                    <td class="text-end">
+                        @if (e.Status != "Cancelled")
+                        {
+                            <form asp-action="Cancel" asp-route-id="@e.EnrolmentId" method="post" class="d-inline"
+                                  onsubmit="return confirm('Cancel this enrolment?');">
+                                <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

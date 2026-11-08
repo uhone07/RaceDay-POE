@@ -1,0 +1,31 @@
+﻿@model List<RaceDay.Web.Models.MyResultItem>
+@{
+    ViewData["Title"] = "My results";
+}
+
+<h2 class="mb-3">My results</h2>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">You have no results yet. Results appear here after an organiser captures them.</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.EventName</td>
+                    <td>@r.EventDate.ToString("dd MMM yyyy")</td>
+                    <td>@r.CategoryName</td>
+                    <td>@r.FinishTime.ToString("c")</td>
+                    <td><strong>@r.PositionText</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

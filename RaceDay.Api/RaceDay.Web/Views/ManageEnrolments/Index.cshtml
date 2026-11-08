@@ -1,0 +1,72 @@
+﻿@model RaceDay.Web.Models.EnrolmentListViewModel
+@{
+    ViewData["Title"] = "Enrolments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0">Enrolments</h2>
+        <span class="text-muted">@Model.EventName</span>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="ManageEvents" asp-action="Index">Back to events</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model.Rows.Count == 0)
+{
+    <p class="text-muted">No one has enrolled for this event yet.</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr><th>Participant</th><th>Category</th><th>Enrolled</th><th>Status</th><th>Change status</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr>
+                    <td>@row.Enrolment.ParticipantName</td>
+                    <td>@row.Enrolment.CategoryName</td>
+                    <td>@row.Enrolment.EnrolmentDate.ToString("dd MMM yyyy")</td>
+                    <td><span class="badge @row.Enrolment.BadgeClass">@row.Enrolment.Status</span></td>
+                    <td>
+                        <form asp-action="SetStatus" asp-route-eventId="@Model.EventId" asp-route-id="@row.Enrolment.EnrolmentId" method="post" class="d-flex gap-1">
+                            <select name="status" class="form-select form-select-sm">
+                                @foreach (var s in new[] { "Pending", "Confirmed", "Cancelled" })
+                                {
+                                    <option value="@s" selected="@(s == row.Enrolment.Status)">@s</option>
+                                }
+                            </select>
+                            <button class="btn btn-sm btn-outline-primary">Set</button>
+                        </form>
+                    </td>
+                    <td>
+                        @if (row.Result != null)
+                        {
+                            <span>@row.Result.FinishPosition of @row.Result.TotalFinishers</span>
+                            <span class="text-muted">(@row.Result.FinishTime.ToString("c"))</span>
+                            <a class="btn btn-sm btn-link" asp-controller="ManageResults" asp-action="Edit" asp-route-eventId="@Model.EventId" asp-route-id="@row.Result.ResultId">Edit</a>
+                        }
+                        else if (row.Enrolment.Status != "Cancelled")
+                        {
+                            <a class="btn btn-sm btn-outline-success" asp-controller="ManageResults" asp-action="Create" asp-route-eventId="@Model.EventId" asp-route-enrolmentId="@row.Enrolment.EnrolmentId">Capture result</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,43 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RaceDay.Web.Models;
+namespace RaceDay.Api.Models;
 
-// One event as returned by the API.
-public class EventListItem
+public class Event
 {
+    [Key]
     public int EventId { get; set; }
-    public string Name { get; set; } = "";
-    public string? Description { get; set; }
-    public DateTime EventDate { get; set; }
-    public string Location { get; set; } = "";
-    public decimal DistanceKm { get; set; }
-    public string EventType { get; set; } = "";
-    public string? BannerImageUrl { get; set; }
+
+    // Foreign key to Users (the organiser who created the event)
     public int OrganiserId { get; set; }
-}
-
-// Used by the Create and Edit forms. Matches the API's EventDto.
-public class EventFormViewModel
-{
-    public int EventId { get; set; }
 
     [Required, MaxLength(150)]
-    public string Name { get; set; } = "";
+    public string Name { get; set; } = string.Empty;
 
     [MaxLength(1000)]
     public string? Description { get; set; }
 
-    [Required, Display(Name = "Date and time"), DataType(DataType.DateTime)]
-    public DateTime EventDate { get; set; } = DateTime.Today.AddDays(7);
+    public DateTime EventDate { get; set; }
 
     [Required, MaxLength(200)]
-    public string Location { get; set; } = "";
+    public string Location { get; set; } = string.Empty;
 
-    [Range(0.1, 1000, ErrorMessage = "Distance must be between 0.1 and 1000 km."), Display(Name = "Distance (km)")]
-    public decimal DistanceKm { get; set; } = 5;
+    public decimal DistanceKm { get; set; }
 
-    [Required, Display(Name = "Event type")]
-    public string EventType { get; set; } = "Run";
+    // Run, Walk or Cycle
+    [Required, MaxLength(10)]
+    public string EventType { get; set; } = string.Empty;
 
+    [MaxLength(500)]
     public string? BannerImageUrl { get; set; }
+
+    public User? Organiser { get; set; }
+    public List<Category> Categories { get; set; } = new();
+    public List<Enrolment> Enrolments { get; set; } = new();
 }

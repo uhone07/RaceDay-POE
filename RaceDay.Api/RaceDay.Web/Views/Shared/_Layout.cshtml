@@ -34,6 +34,18 @@
                                 <a class="nav-link text-dark" asp-controller="ManageEvents" asp-action="Index">My events</a>
                             </li>
                         }
+                        @if (navRole == "Participant")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="MyEnrolments" asp-action="Index">My enrolments</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="MyResults" asp-action="Index">My results</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav align-items-center">
                         @if (navName == null)

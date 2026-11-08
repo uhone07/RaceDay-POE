@@ -1,0 +1,106 @@
+﻿@model RaceDay.Web.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var upcoming = Model.Events.Where(e => e.IsUpcoming).Take(5).ToList();
+}
+
+<h2 class="mb-4">Organiser dashboard</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="display-6">@Model.TotalEvents</div>
+                <div class="text-muted">Events created</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="display-6">@Model.UpcomingEvents</div>
+                <div class="text-muted">Upcoming events</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="display-6">@Model.TotalEnrolments</div>
+                <div class="text-muted">Total enrolments</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="display-6 text-warning">@Model.PendingEnrolments</div>
+                <div class="text-muted">Awaiting confirmation</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <h5>Upcoming events</h5>
+        @if (upcoming.Count == 0)
+        {
+            <p class="text-muted">No upcoming events.</p>
+        }
+        else
+        {
+            <ul class="list-group">
+                @foreach (var e in upcoming)
+                {
+                    var days = (e.EventDate.Date - DateTime.Today).Days;
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="fw-bold">@e.Name</div>
+                            <small class="text-muted">@e.EventDate.ToString("dd MMM yyyy HH:mm") &middot; @e.Location</small><br />
+                            <small>@(days == 0 ? "Today" : days == 1 ? "Tomorrow" : $"In {days} days")</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">@e.Total enrolled</span>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div class="col-md-7">
+        <h5>Enrolments per event</h5>
+        @if (Model.Events.Count == 0)
+        {
+            <p class="text-muted">You have not created any events yet.</p>
+            <a class="btn btn-primary" asp-controller="ManageEvents" asp-action="Create">Create your first event</a>
+        }
+        else
+        {
+            <table class="table align-middle">
+                <thead>
+                    <tr><th>Event</th><th>Date</th><th>Total</th><th>Confirmed</th><th>Pending</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Events)
+                    {
+                        <tr>
+                            <td>@e.Name</td>
+                            <td>@e.EventDate.ToString("dd MMM yyyy")</td>
+                            <td>@e.Total</td>
+                            <td><span class="badge bg-success">@e.Confirmed</span></td>
+                            <td><span class="badge bg-warning text-dark">@e.Pending</span></td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="ManageEnrolments" asp-action="Index" asp-route-eventId="@e.EventId">Enrolments</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

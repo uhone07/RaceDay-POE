@@ -1,0 +1,23 @@
+﻿@model RaceDay.Web.Models.ResultFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+<p class="lead">Participant: <strong>@Model.ParticipantName</strong></p>
+
+<div class="mb-3">
+    <label asp-for="FinishTime" class="form-label"></label>
+    <input asp-for="FinishTime" class="form-control" placeholder="01:45:32" />
+    <span asp-validation-for="FinishTime" class="text-danger"></span>
+</div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="FinishPosition" class="form-label"></label>
+        <input asp-for="FinishPosition" class="form-control" />
+        <span asp-validation-for="FinishPosition" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="TotalFinishers" class="form-label"></label>
+        <input asp-for="TotalFinishers" class="form-control" />
+        <span asp-validation-for="TotalFinishers" class="text-danger"></span>
+    </div>
+</div>
