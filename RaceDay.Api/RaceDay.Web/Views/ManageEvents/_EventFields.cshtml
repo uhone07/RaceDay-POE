@@ -39,3 +39,15 @@
         </select>
     </div>
 </div>
+<div class="mb-3">
+    <label asp-for="BannerFile" class="form-label"></label>
+    @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+    {
+        <div class="mb-2">
+            <img src="@Model.BannerImageUrl" alt="Current banner" class="img-thumbnail" style="max-height:140px" />
+        </div>
+    }
+    <input asp-for="BannerFile" class="form-control" accept="image/png,image/jpeg,image/webp,image/gif" />
+    <div class="form-text">Optional. JPG, PNG, WEBP or GIF, up to 5 MB.</div>
+    <span asp-validation-for="BannerFile" class="text-danger"></span>
+</div>

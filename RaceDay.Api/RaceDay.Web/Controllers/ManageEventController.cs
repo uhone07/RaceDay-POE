@@ -33,6 +33,8 @@ public class ManageEventsController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
+        if (!await UploadBannerIfChosen(model)) return View(model);
+
         var response = await _api.SendAsync(HttpMethod.Post, "api/events", ToDto(model));
         if (!response.IsSuccessStatusCode)
         {
@@ -73,6 +75,17 @@ public class ManageEventsController : Controller
         model.EventId = id;
         if (!ModelState.IsValid) return View(model);
 
+        // Keep the current banner unless a new picture was chosen.
+        if (model.BannerFile == null || model.BannerFile.Length == 0)
+        {
+            var existing = await _api.GetAsync<EventListItem>($"api/events/{id}");
+            model.BannerImageUrl = existing?.BannerImageUrl;
+        }
+        else if (!await UploadBannerIfChosen(model))
+        {
+            return View(model);
+        }
+
         var response = await _api.SendAsync(HttpMethod.Put, $"api/events/{id}", ToDto(model));
         if (!response.IsSuccessStatusCode)
         {
@@ -95,6 +108,24 @@ public class ManageEventsController : Controller
             TempData["Error"] = await ReadMessage(response, "Could not delete the event.");
 
         return RedirectToAction("Index");
+    }
+
+    // If the organiser chose a picture, send it to the API (which stores it in Azure Blob Storage)
+    // and keep the returned URL. Returns false (with an error on the form) if the upload fails.
+    private async Task<bool> UploadBannerIfChosen(EventFormViewModel model)
+    {
+        if (model.BannerFile == null || model.BannerFile.Length == 0)
+            return true;
+
+        var (url, error) = await _api.UploadImageAsync("api/uploads/event-banner", model.BannerFile);
+        if (url == null)
+        {
+            ModelState.AddModelError(nameof(model.BannerFile), error ?? "The image could not be uploaded.");
+            return false;
+        }
+
+        model.BannerImageUrl = url;
+        return true;
     }
 
     private static object ToDto(EventFormViewModel m) => new

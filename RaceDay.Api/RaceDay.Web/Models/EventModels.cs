@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay.Web.Models;
 
@@ -40,6 +39,9 @@ public class EventFormViewModel
     [Required, Display(Name = "Event type"), MaxLength(10)]
     public string EventType { get; set; } = "Run";
 
-    [Display(Name = "Banner image URL"), MaxLength(500)]
     public string? BannerImageUrl { get; set; }
+
+    // The picture chosen on the form (sent to the API, which stores it in Azure).
+    [Display(Name = "Banner image")]
+    public IFormFile? BannerFile { get; set; }
 }

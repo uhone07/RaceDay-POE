@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace RaceDay.Web.Services;
 
@@ -48,5 +49,33 @@ public class ApiClient
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
+    // Sends an image to one of the API's upload endpoints (the API stores it in Azure).
+    // Returns the image URL, or an error message the page can show.
+    public async Task<(string? Url, string? Error)> UploadImageAsync(string url, IFormFile file)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+
+        var cookie = Session.GetString(CookieKey);
+        if (!string.IsNullOrEmpty(cookie))
+            request.Headers.Add("Cookie", cookie);
+
+        var form = new MultipartFormDataContent();
+        var fileContent = new StreamContent(file.OpenReadStream());
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+        form.Add(fileContent, "File", file.FileName);
+        request.Content = form;
+
+        var response = await _http.SendAsync(request);
+        var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+
+        if (response.IsSuccessStatusCode && result != null && result.TryGetValue("url", out var imageUrl))
+            return (imageUrl, null);
+
+        var message = result != null && result.TryGetValue("message", out var m)
+            ? m
+            : "The image could not be uploaded.";
+        return (null, message);
+    }
+
     public void ForgetSession() => Session.Remove(CookieKey);
-}
+}}
