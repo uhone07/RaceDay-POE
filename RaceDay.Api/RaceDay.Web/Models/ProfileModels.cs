@@ -26,4 +26,8 @@ public class ProfileFormViewModel
     public string? PhoneNumber { get; set; }
 
     public string? ProfilePictureUrl { get; set; }
+
+    // The picture chosen on the form (sent to the API, which stores it in Azure).
+    [Display(Name = "Profile picture")]
+    public IFormFile? PictureFile { get; set; }
 }

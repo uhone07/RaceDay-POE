@@ -42,6 +42,18 @@ public class ProfileController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
+        // If a new picture was chosen, send it to the API (which stores it in Azure Blob Storage).
+        if (model.PictureFile != null && model.PictureFile.Length > 0)
+        {
+            var (url, error) = await _api.UploadImageAsync("api/uploads/profile-picture", model.PictureFile);
+            if (url == null)
+            {
+                ModelState.AddModelError(nameof(model.PictureFile), error ?? "The image could not be uploaded.");
+                return View(model);
+            }
+            model.ProfilePictureUrl = url;
+        }
+
         var response = await _api.SendAsync(HttpMethod.Put, "api/profile", new
         {
             model.FullName,
