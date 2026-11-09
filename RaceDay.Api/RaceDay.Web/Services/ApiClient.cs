@@ -78,4 +78,4 @@ public class ApiClient
     }
 
     public void ForgetSession() => Session.Remove(CookieKey);
-}}
+}
