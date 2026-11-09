@@ -15,7 +15,16 @@ builder.Services.AddSession(o =>
 builder.Services.AddHttpClient<ApiClient>(c =>
 {
     c.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler { UseCookies = false };
+
+    // Only used when running in Docker against the API's local development certificate.
+    if (builder.Configuration.GetValue<bool>("ApiTrustAnyCertificate"))
+        handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+    return handler;
+});
 
 var app = builder.Build();
 
