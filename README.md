@@ -133,5 +133,5 @@ I used an AI assistant (Claude) for step-by-step guidance while building Parts 2
 ## Video Presentations
 
 - [Part 1 walkthrough](https://youtu.be/Pi1sjD3rQZ4)
-- Part 2 walkthrough: PASTE YOUR UNLISTED YOUTUBE LINK HERE
-- Part 3 walkthrough: PASTE YOUR UNLISTED YOUTUBE LINK HERE
+
+- [Part 3 walkthrough](https://youtu.be/4HikypA-wdw)
